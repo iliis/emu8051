@@ -104,10 +104,10 @@ class Emulator8051:
 
 
     def ACC(self):
-        return self.lower_data[lib.REG_ACC]
+        return self.SFR[lib.REG_ACC]
 
     def PSW(self):
-        return self.lower_data[lib.REG_PSW]
+        return self.SFR[lib.REG_PSW]
 
     # convenience function to access current register bank
     def r(self, n):

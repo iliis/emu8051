@@ -102,51 +102,52 @@ enum EM8051_EXCEPTION
 // SFR register locations
 enum SFR_REGS
 {
-    REG_ACC    ,
-    REG_B      ,
-    REG_PSW    ,
-    REG_SP     ,
-    REG_DPL    ,
-    REG_DPH    ,
-    REG_P0     ,
-    REG_P1     ,
-    REG_P2     ,
-    REG_P3     ,
-    REG_IP     ,
-    REG_IE     ,
-    REG_TMOD   ,
-    REG_TCON   ,
-    REG_TH0    ,
-    REG_TL0    ,
-    REG_TH1    ,
-    REG_TL1    ,
-    REG_SCON   ,
-    REG_PCON
+    REG_ACC  =  """ + str(0xE0 - 0x80) + """,
+    REG_B    =  """ + str(0xF0 - 0x80) + """,
+    REG_PSW  =  """ + str(0xD0 - 0x80) + """,
+    REG_SP   =  """ + str(0x81 - 0x80) + """,
+    REG_DPL  =  """ + str(0x82 - 0x80) + """,
+    REG_DPH  =  """ + str(0x83 - 0x80) + """,
+    REG_P0   =  """ + str(0x80 - 0x80) + """,
+    REG_P1   =  """ + str(0x90 - 0x80) + """,
+    REG_P2   =  """ + str(0xA0 - 0x80) + """,
+    REG_P3   =  """ + str(0xB0 - 0x80) + """,
+    REG_IP   =  """ + str(0xB8 - 0x80) + """,
+    REG_IE   =  """ + str(0xA8 - 0x80) + """,
+    REG_TMOD =  """ + str(0x89 - 0x80) + """,
+    REG_TCON =  """ + str(0x88 - 0x80) + """,
+    REG_TH0  =  """ + str(0x8C - 0x80) + """,
+    REG_TL0  =  """ + str(0x8A - 0x80) + """,
+    REG_TH1  =  """ + str(0x8D - 0x80) + """,
+    REG_TL1  =  """ + str(0x8B - 0x80) + """,
+    REG_SCON =  """ + str(0x98 - 0x80) + """,
+    REG_PCON =  """ + str(0x87 - 0x80) + """
 };
 
 enum PSW_BITS
 {
-    PSW_P,
-    PSW_UNUSED,
-    PSW_OV,
-    PSW_RS0,
-    PSW_RS1,
-    PSW_F0,
-    PSW_AC,
-    PSW_C
+    PSW_P = 0,
+    PSW_UNUSED = 1,
+    PSW_OV = 2,
+    PSW_RS0 = 3,
+    PSW_RS1 = 4,
+    PSW_F0 = 5,
+    PSW_AC = 6,
+    PSW_C = 7
 };
 
 enum PSW_MASKS
 {
-    PSWMASK_P,
-    PSWMASK_UNUSED,
-    PSWMASK_OV,
-    PSWMASK_RS0,
-    PSWMASK_RS1,
-    PSWMASK_F0,
-    PSWMASK_AC,
-    PSWMASK_C
+    PSWMASK_P = 0x01,
+    PSWMASK_UNUSED = 0x02,
+    PSWMASK_OV = 0x04,
+    PSWMASK_RS0 = 0x08,
+    PSWMASK_RS1 = 0x10,
+    PSWMASK_F0 = 0x20,
+    PSWMASK_AC = 0x40,
+    PSWMASK_C = 0x80
 };
+
 
 // Callbacks into python
 

@@ -99,6 +99,55 @@ enum EM8051_EXCEPTION
     EXCEPTION_ILLEGAL_OPCODE     // for the single 'reserved' opcode in the architecture
 };
 
+// SFR register locations
+enum SFR_REGS
+{
+    REG_ACC    ,
+    REG_B      ,
+    REG_PSW    ,
+    REG_SP     ,
+    REG_DPL    ,
+    REG_DPH    ,
+    REG_P0     ,
+    REG_P1     ,
+    REG_P2     ,
+    REG_P3     ,
+    REG_IP     ,
+    REG_IE     ,
+    REG_TMOD   ,
+    REG_TCON   ,
+    REG_TH0    ,
+    REG_TL0    ,
+    REG_TH1    ,
+    REG_TL1    ,
+    REG_SCON   ,
+    REG_PCON
+};
+
+enum PSW_BITS
+{
+    PSW_P,
+    PSW_UNUSED,
+    PSW_OV,
+    PSW_RS0,
+    PSW_RS1,
+    PSW_F0,
+    PSW_AC,
+    PSW_C
+};
+
+enum PSW_MASKS
+{
+    PSWMASK_P,
+    PSWMASK_UNUSED,
+    PSWMASK_OV,
+    PSWMASK_RS0,
+    PSWMASK_RS1,
+    PSWMASK_F0,
+    PSWMASK_AC,
+    PSWMASK_C
+};
+
 // Callbacks into python
 
 // Callback: some exceptional situation occurred. See EM8051_EXCEPTION enum, below

@@ -40,7 +40,7 @@ def em8051xread_callback(aCPU, aAddress):
 
 
 
-class Emulator:
+class Emulator8051:
 
     def __init__(self, aCPU = None):
 
@@ -72,6 +72,12 @@ class Emulator:
 
         lib.reset(self.emu, 1)
 
+    def reset(self, wipeMemory = False):
+        if wipeMemory:
+            lib.reset(self.emu, 1)
+        else:
+            lib.reset(self.emu, 0)
+
 
     def loadHEX(self, filename):
         result = lib.load_obj(self.emu, filename.encode('ascii'));
@@ -97,11 +103,31 @@ class Emulator:
                 instructions -= 1
 
 
+    def ACC(self):
+        return self.lower_data[lib.REG_ACC]
+
+    def PSW(self):
+        return self.lower_data[lib.REG_PSW]
+
+    # convenience function to access current register bank
+    def r(self, n):
+
+        if n < 0 or n > 7:
+            raise ValueError("Invalid register index: " + str(n))
+
+        RX_ADDRESS = n + 8 * ((int.from_bytes(self.PSW(), byteorder='little') & (lib.PSWMASK_RS0|lib.PSWMASK_RS1))>>lib.PSW_RS0)
+        return self.lower_data[RX_ADDRESS]
+
+
+
 if __name__ == "__main__":
-    e = Emulator()
+    e = Emulator8051()
     e.loadHEX("test.ihx")
 
-    while e.lower_data[0x60] == b'\x00':
+    while e.lower_data[0x60] != b'\xFA':
+        print(e.ACC(), e.r(0), e.r(1), e.r(2))
         e.step()
 
     print(hex(ord(e.lower_data[0x60])))
+
+    print(lib.REG_ACC)

@@ -1,11 +1,11 @@
 #!/bin/env python3
 
-# requires cffi > 1.0 (or something) (install with pip to get a up-to-date version!)
+# requires cffi >= 1.4 (install with pip to get a up-to-date version!)
 
 from cffi import FFI
 builder = FFI()
 
-builder.set_source("py8051", """
+builder.set_source("py8051core", """
 #include "emu8051.h"
 """, sources=["core.c", "opcodes.c", "disasm.c"])
 
@@ -54,7 +54,7 @@ struct em8051
     int mTickDelay; // How many ticks should we delay before continuing
     em8051operation op[256]; // function pointers to opcode handlers
     em8051decoder dec[256]; // opcode-to-string decoder handlers    
-    em8051exception except; // callback: exceptional situation occurred
+    em8051exception except_cb; // callback: exceptional situation occurred
     em8051sfrread sfrread; // callback: SFR register being read
     em8051sfrwrite sfrwrite; // callback: SFR register written
     em8051xread xread; // callback: external memory being read
@@ -87,6 +87,41 @@ int load_obj(struct em8051 *aCPU, char *aFilename);
 
 // Alternate way to execute an opcode (switch-structure instead of function pointers)
 int do_op(struct em8051 *aCPU);
+
+
+enum EM8051_EXCEPTION
+{
+    EXCEPTION_STACK,  // stack address > 127 with no upper memory, or roll over
+    EXCEPTION_ACC_TO_A, // acc-to-a move operation; illegal (acc-to-acc is ok, a-to-acc is ok..)
+    EXCEPTION_IRET_PSW_MISMATCH, // psw not preserved over interrupt call (doesn't care about P, F0 or UNUSED)
+    EXCEPTION_IRET_SP_MISMATCH,  // sp not preserved over interrupt call
+    EXCEPTION_IRET_ACC_MISMATCH, // acc not preserved over interrupt call
+    EXCEPTION_ILLEGAL_OPCODE     // for the single 'reserved' opcode in the architecture
+};
+
+// Callbacks into python
+
+// Callback: some exceptional situation occurred. See EM8051_EXCEPTION enum, below
+extern "Python" void em8051exception_callback(struct em8051 *aCPU, int aCode);
+
+// Callback: an SFR register is about to be read (not called for 'a' ops nor psw changes)
+// Default is to return the value in the SFR register. Ports may act differently.
+extern "Python" int em8051sfrread_callback(struct em8051 *aCPU, int aRegister);
+
+// Callback: an SFR register has changed (not called for 'a' ops)
+// Default is to do nothing
+extern "Python" void em8051sfrwrite_callback(struct em8051 *aCPU, int aRegister);
+
+// Callback: writing to external memory
+// Default is to update external memory
+// (can be used to control some peripherals)
+extern "Python" void em8051xwrite_callback(struct em8051 *aCPU, int aAddress, int aValue);
+
+// Callback: reading from external memory
+// Default is to return the value in external memory 
+// (can be used to control some peripherals)
+extern "Python" int em8051xread_callback(struct em8051 *aCPU, int aAddress);
+
 """)
 
 if __name__ == "__main__":

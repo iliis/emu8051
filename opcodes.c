@@ -68,8 +68,8 @@ void push_to_stack(struct em8051 *aCPU, int aValue)
         }
         else
         {
-            if (aCPU->except)
-                aCPU->except(aCPU, EXCEPTION_STACK);
+            if (aCPU->except_cb)
+                aCPU->except_cb(aCPU, EXCEPTION_STACK);
         }
     }
     else
@@ -77,8 +77,8 @@ void push_to_stack(struct em8051 *aCPU, int aValue)
         aCPU->mLowerData[aCPU->mSFR[REG_SP]] = aValue;
     }
     if (aCPU->mSFR[REG_SP] == 0)
-        if (aCPU->except)
-            aCPU->except(aCPU, EXCEPTION_STACK);
+        if (aCPU->except_cb)
+            aCPU->except_cb(aCPU, EXCEPTION_STACK);
 }
 
 static int pop_from_stack(struct em8051 *aCPU)
@@ -92,8 +92,8 @@ static int pop_from_stack(struct em8051 *aCPU)
         }
         else
         {
-            if (aCPU->except)
-                aCPU->except(aCPU, EXCEPTION_STACK);
+            if (aCPU->except_cb)
+                aCPU->except_cb(aCPU, EXCEPTION_STACK);
         }
     }
     else
@@ -103,8 +103,8 @@ static int pop_from_stack(struct em8051 *aCPU)
     aCPU->mSFR[REG_SP]--;
 
     if (aCPU->mSFR[REG_SP] == 0xff)
-        if (aCPU->except)
-            aCPU->except(aCPU, EXCEPTION_STACK);
+        if (aCPU->except_cb)
+            aCPU->except_cb(aCPU, EXCEPTION_STACK);
     return value;
 }
 
@@ -459,18 +459,18 @@ static int reti(struct em8051 *aCPU)
 {
     if (aCPU->mInterruptActive)
     {
-        if (aCPU->except)
+        if (aCPU->except_cb)
         {
             int hi = 0;
             if (aCPU->mInterruptActive > 1)
                 hi = 1;
             if (aCPU->int_a[hi] != aCPU->mSFR[REG_ACC])
-                aCPU->except(aCPU, EXCEPTION_IRET_ACC_MISMATCH);
+                aCPU->except_cb(aCPU, EXCEPTION_IRET_ACC_MISMATCH);
             if (aCPU->int_sp[hi] != aCPU->mSFR[REG_SP])
-                aCPU->except(aCPU, EXCEPTION_IRET_SP_MISMATCH);    
+                aCPU->except_cb(aCPU, EXCEPTION_IRET_SP_MISMATCH);    
             if ((aCPU->int_psw[hi] & (PSWMASK_OV | PSWMASK_RS0 | PSWMASK_RS1 | PSWMASK_AC | PSWMASK_C)) !=                 
                 (aCPU->mSFR[REG_PSW] & (PSWMASK_OV | PSWMASK_RS0 | PSWMASK_RS1 | PSWMASK_AC | PSWMASK_C)))
-                aCPU->except(aCPU, EXCEPTION_IRET_PSW_MISMATCH);
+                aCPU->except_cb(aCPU, EXCEPTION_IRET_PSW_MISMATCH);
         }
 
         if (aCPU->mInterruptActive & 2)
@@ -1657,8 +1657,8 @@ static int mov_a_mem(struct em8051 *aCPU)
     int address = OPERAND1;
     int value = read_mem(aCPU, address);
     if (REG_ACC == address - 0x80)
-        if (aCPU->except)
-            aCPU->except(aCPU, EXCEPTION_ACC_TO_A);
+        if (aCPU->except_cb)
+            aCPU->except_cb(aCPU, EXCEPTION_ACC_TO_A);
     ACC = value;
 
     PC += 2;
@@ -1767,8 +1767,8 @@ static int mov_indir_rx_a(struct em8051 *aCPU)
 static int nop(struct em8051 *aCPU)
 {
     if (aCPU->mCodeMem[PC & (aCPU->mCodeMemSize - 1)] != 0)
-        if (aCPU->except)
-            aCPU->except(aCPU, EXCEPTION_ILLEGAL_OPCODE);
+        if (aCPU->except_cb)
+            aCPU->except_cb(aCPU, EXCEPTION_ILLEGAL_OPCODE);
     PC++;
     return 0;
 }

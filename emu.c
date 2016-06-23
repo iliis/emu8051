@@ -287,7 +287,7 @@ int main(int parc, char ** pars)
     emu.mLowerData   = malloc(128);
     emu.mUpperData   = malloc(128);
     emu.mSFR         = malloc(128);
-    emu.except       = &emu_exception;
+    emu.except_cb    = &emu_exception;
     emu.sfrread      = &emu_sfrread;
     emu.xread = NULL;
     emu.xwrite = NULL;

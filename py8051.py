@@ -93,6 +93,11 @@ class Emulator8051:
         elif result == -5:
             raise IOError("No end of data marker found.")
 
+    def decode(self, position):
+        cstring = ffi.new("char[64]")
+        lib.decode(self.emu, position, cstring)
+        return ffi.string(cstring)
+
 
     def tick(self):
         return lib.tick(self.emu)
@@ -102,6 +107,8 @@ class Emulator8051:
             if self.tick() > 0:
                 instructions -= 1
 
+    def PC(self):
+        return self.emu.mPC
 
     def ACC(self):
         return self.SFR[lib.REG_ACC]
